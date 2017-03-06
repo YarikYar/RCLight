@@ -12,22 +12,49 @@
 #define FLAG_WARN   (1<<5)
 #define FLAG_STROB  (1<<6)
 
+#define SYSFLAG_INT0 (1<<0)
+#define SYSFLAG_INT1 (1<<1)
+
 #define ACTION_IDLE    (1<<0)
 #define ACTION_MEASURE (1<<1)
 #define ACTION_UPDATE  (1<<2)
 #define ACTION_BUTTON  (1<<3)
 
-uint8_t action, flag;
+#define MODE_IDLE 0x01
+#define MODE_STROB 0x02
+
+uint8_t action, flag, mode, sysflag;
+uint32_t system_tick_counter, blinker_counter, warn_counter;
 
 
 void EXTI0_1_IRQHandler(void) // Button interrupt routine
 {
-   EXTI->PR =0x02; 
+   EXTI->PR = 0x02; 
+	if(!(GPIOB->IDR & (1<<1)))
+	{
+		delay_ms(debounce_time);
+	}
+	 if(!(GPIOB->IDR & (1<<1)))
+	 {
+		 mode++;
+		 if(mode > num_modes) mode = MODE_IDLE;
+	 }
 }
 
 void TIM17_IRQHandler(void)  // Update timer interrupt routine
 {
 	TIM17->SR = 0;
+	system_tick_counter++;
+	if(mode == MODE_IDLE)
+	{
+		if(flag & FLAG_STOP) TIM14->CCR1 = 47999;
+		else TIM14->CCR1 = 15000;
+		if(flag & FLAG_BACK) GPIOA->BSRR |= GPIO_BSRR_3_S;
+		else GPIOA->BSRR |= GPIO_BSRR_3_R;
+		
+		if((flag & FLAG_STOP) || !(flag & FLAG_LEFT) || !(flag & FLAG_RIGHT)) warn_counter++;
+		
+	}
 }
 
 int __attribute__((noreturn)) main(void)
@@ -82,7 +109,7 @@ int __attribute__((noreturn)) main(void)
 	    TIM14->CCER |= TIM_CCER_CC1E;
 	    TIM14->BDTR |= TIM_BDTR_MOE;
 	    TIM14->CR1 |= TIM_CR1_CEN;
-	    TIM14->CCR1 = 47999;
+	    TIM14->CCR1 = 0;
 			/* ----------------- */
 			
 			/* TIM1 - pulsein() timer */
@@ -98,6 +125,39 @@ int __attribute__((noreturn)) main(void)
 	/* ------------------- */
 	while(1)
 	{
+		cur_th = pulsein(0);
+		cur_st = pulsein(1);
 		
+		if(cur_th > (setup_th - hysteresis/2) || (cur_th < setup_th + hysteresis/2)) flag |= FLAG_STOP;
+		else flag &= ~FLAG_STOP;
+		if(reverse_th)
+		{
+			if(cur_th < (setup_th - hysteresis)) flag |= FLAG_BACK;
+			else flag &= ~FLAG_BACK;
+		}
+		else
+		{
+			if(cur_th > (setup_th + hysteresis)) flag |= FLAG_BACK;
+			else flag &= ~FLAG_BACK;
+		}
+		
+		if(reverse_st)
+		{
+			if(cur_st > (setup_st + hysteresis/2)) flag |= FLAG_LEFT;
+			else flag &= ~FLAG_LEFT;
+			
+			if(cur_st < (setup_st - hysteresis/2)) flag |= FLAG_RIGHT;
+			else flag &= ~FLAG_RIGHT;
+		}
+		else
+			{
+			if(cur_st < (setup_st - hysteresis/2)) flag |= FLAG_LEFT;
+			else flag &= ~FLAG_LEFT;
+			
+			if(cur_st > (setup_st + hysteresis/2)) flag |= FLAG_RIGHT;
+			else flag &= ~FLAG_RIGHT;
+		}
+		
+
 	}
 }

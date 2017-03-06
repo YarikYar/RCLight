@@ -9,3 +9,4 @@
 .\objects\main.o: .\Lib\defines.h
 .\objects\main.o: .\Lib\delay.h
 .\objects\main.o: .\Lib\func.h
+.\objects\main.o: User\config.h
