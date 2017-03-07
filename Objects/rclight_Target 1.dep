@@ -1,5 +1,5 @@
 Dependencies for Project 'rclight', Target 'Target 1': (DO NOT MODIFY !)
-F (.\User\main.c)(0x58BD7E4E)(--c99 -c --cpu Cortex-M0 -D__EVAL -g -O0 --apcs=interwork --split_sections -I.\Lib -I.\User-I F:\STM32F0-KeilMDK\RCLight_Release\RCLight\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include-D__UVISION_VERSION="517" -D_RTE_ -DSTM32F030x6-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+F (.\User\main.c)(0x58BEE9B2)(--c99 -c --cpu Cortex-M0 -D__EVAL -g -O0 --apcs=interwork --split_sections -I.\Lib -I.\User-I F:\STM32F0-KeilMDK\RCLight_Release\RCLight\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include-D__UVISION_VERSION="517" -D_RTE_ -DSTM32F030x6-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include\stm32f0xx.h)(0x56EA3C8A)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include\stm32f030x6.h)(0x56EA3C8A)
 I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\core_cm0.h)(0x589AC63C)
@@ -10,7 +10,7 @@ I (C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include\system_stm32f0xx.
 I (.\Lib\defines.h)(0x5878F649)
 I (.\Lib\delay.h)(0x58BAAD01)
 I (.\Lib\func.h)(0x58BAB0D1)
-I (User\config.h)(0x58BD7E4F)
+I (User\config.h)(0x58BE9BDB)
 F (.\Lib\delay.c)(0x58BAAD01)(--c99 -c --cpu Cortex-M0 -D__EVAL -g -O0 --apcs=interwork --split_sections -I.\Lib -I.\User-I F:\STM32F0-KeilMDK\RCLight_Release\RCLight\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include-D__UVISION_VERSION="517" -D_RTE_ -DSTM32F030x6-o .\objects\delay.o --omf_browse .\objects\delay.crf --depend .\objects\delay.d)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include\stm32f0xx.h)(0x56EA3C8A)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include\stm32f030x6.h)(0x56EA3C8A)
@@ -21,7 +21,7 @@ I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_armcc.h)(0x589AC63C)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include\system_stm32f0xx.h)(0x56EA3C8A)
 I (Lib\defines.h)(0x5878F649)
 I (Lib\delay.h)(0x58BAAD01)
-F (.\Lib\func.c)(0x58BAB33E)(--c99 -c --cpu Cortex-M0 -D__EVAL -g -O0 --apcs=interwork --split_sections -I.\Lib -I.\User-I F:\STM32F0-KeilMDK\RCLight_Release\RCLight\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include-D__UVISION_VERSION="517" -D_RTE_ -DSTM32F030x6-o .\objects\func.o --omf_browse .\objects\func.crf --depend .\objects\func.d)
+F (.\Lib\func.c)(0x58BEE21A)(--c99 -c --cpu Cortex-M0 -D__EVAL -g -O0 --apcs=interwork --split_sections -I.\Lib -I.\User-I F:\STM32F0-KeilMDK\RCLight_Release\RCLight\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include-D__UVISION_VERSION="517" -D_RTE_ -DSTM32F030x6-o .\objects\func.o --omf_browse .\objects\func.crf --depend .\objects\func.d)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include\stm32f0xx.h)(0x56EA3C8A)
 I (C:\Keil_v5\ARM\PACK\Keil\STM32F0xx_DFP\1.5.0\Device\Include\stm32f030x6.h)(0x56EA3C8A)
 I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\core_cm0.h)(0x589AC63C)

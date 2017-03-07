@@ -23,8 +23,9 @@
 #define MODE_IDLE 0x01
 #define MODE_STROB 0x02
 
-uint8_t action, flag, mode, sysflag;
+uint8_t action, flag, mode = MODE_IDLE, sysflag, int0, int1;
 uint32_t system_tick_counter, blinker_counter, warn_counter;
+uint32_t colarr[] = {0xFF,0xFFFF00,0xFF,0xFF,555,555,555,555};
 
 
 void EXTI0_1_IRQHandler(void) // Button interrupt routine
@@ -45,6 +46,8 @@ void TIM17_IRQHandler(void)  // Update timer interrupt routine
 {
 	TIM17->SR = 0;
 	system_tick_counter++;
+	blinker_counter++;
+	
 	if(mode == MODE_IDLE)
 	{
 		if(flag & FLAG_STOP) TIM14->CCR1 = 47999;
@@ -53,7 +56,42 @@ void TIM17_IRQHandler(void)  // Update timer interrupt routine
 		else GPIOA->BSRR |= GPIO_BSRR_3_R;
 		
 		if((flag & FLAG_STOP) || !(flag & FLAG_LEFT) || !(flag & FLAG_RIGHT)) warn_counter++;
+		if(warn_counter > warn_time)
+		{
+			flag |= FLAG_WARN;
+			warn_counter = 0;
+		}
+    if((!(flag & FLAG_STOP)) && (flag & FLAG_WARN)) flag &= ~FLAG_WARN;
 		
+		if(blinker_counter > blinker_time)
+		{
+			blinker_counter = 0;
+			
+			if((flag & FLAG_LEFT) || (flag & FLAG_WARN))
+			{
+				if(int0) GPIOA->BSRR |= GPIO_BSRR_1_S;
+				else GPIOA->BSRR |= GPIO_BSRR_1_R;
+				int0=!int0;       
+			}
+			else
+			{
+				GPIOA->BSRR |= GPIO_BSRR_1_R;
+				int0 = 0;
+			}
+			
+			if((flag & FLAG_RIGHT) || (flag & FLAG_WARN))
+			{
+				if(int1) GPIOA->BSRR |= GPIO_BSRR_2_S;
+				else GPIOA->BSRR |= GPIO_BSRR_2_R;
+				int1=!int1;       
+			}
+			else
+			{
+				GPIOA->BSRR |= GPIO_BSRR_2_R;
+				int1 = 0;
+			}
+			
+		}	
 	}
 }
 
@@ -72,7 +110,7 @@ int __attribute__((noreturn)) main(void)
 	/* RCC setup */
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOBEN | RCC_AHBENR_GPIOFEN;
 	RCC->APB1ENR |= RCC_APB1ENR_TIM3EN | RCC_APB1ENR_TIM14EN;
-	RCC->APB2ENR |= RCC_APB2ENR_TIM1EN | RCC_APB2ENR_TIM17EN | RCC_APB2ENR_SYSCFGCOMPEN;
+	RCC->APB2ENR |= RCC_APB2ENR_TIM1EN | RCC_APB2ENR_TIM17EN | RCC_APB2ENR_SYSCFGCOMPEN | RCC_APB2ENR_SPI1EN;;
 	/* --------- */
 	
 	/* GPIO setup */
@@ -87,6 +125,7 @@ int __attribute__((noreturn)) main(void)
 	
 	GPIOA_AFRL |= GPIO_AFRL_4_A4 | GPIO_AFRL_7_A0;     // Enabling alternative functions - A4 is TIM14_CH1 and A7 is SPI1_MOSI
 	
+	GPIOA_OSPEEDR |= GPIO_OSPEEDR_7_FAS;
 	SYSCFG->EXTICR[0] = SYSCFG_EXTICR1_EXTI1_PB;
 	EXTI->IMR = EXTI_IMR_MR1 ;
 	EXTI->FTSR = EXTI_FTSR_TR1 ;
@@ -115,49 +154,56 @@ int __attribute__((noreturn)) main(void)
 			/* TIM1 - pulsein() timer */
 			TIM1->PSC = 48-1;
 			/* ---------------------- */
-	/* ------------ */                                 
+	/* ------------ */  
+
+  /* SPI setup */
+	SPI1->CR1 |= SPI_CR1_DIR_1TX | SPI_CR1_MODE_1 | SPI_CR1_MOD_MS | SPI_CR1_PSC_16 | SPI_CR1_NSS_S;
+	SPI1->CR2 |= SPI_CR2_DS_8B;
+	SPI1->CR1 |= SPI_CR1_SPE;
+	/* --- ----- */
 	    
 	/* Initial calibration */
-	while(pulsein(0) < 1000){}  // This delay is neccessary to wait for stable signal
+	while(pulsein(0) < 1300){}  // This delay is neccessary to wait for stable signal
 	 setup_th = pulsein(0);
-	while(pulsein(1) < 1000){}
+	while(pulsein(1) < 1300){}
 	 setup_st = pulsein(1);
 	/* ------------------- */
+		
+   writeWS2812BA(colarr,8);
 	while(1)
 	{
 		cur_th = pulsein(0);
 		cur_st = pulsein(1);
 		
-		if(cur_th > (setup_th - hysteresis/2) || (cur_th < setup_th + hysteresis/2)) flag |= FLAG_STOP;
+		if(cur_th > (setup_th - hysteresis/2) && (cur_th < setup_th + hysteresis/2)) flag |= FLAG_STOP;
 		else flag &= ~FLAG_STOP;
 		if(reverse_th)
 		{
-			if(cur_th < (setup_th - hysteresis)) flag |= FLAG_BACK;
+			if(cur_th > setup_th - hysteresis) flag |= FLAG_BACK;
 			else flag &= ~FLAG_BACK;
 		}
 		else
 		{
-			if(cur_th > (setup_th + hysteresis)) flag |= FLAG_BACK;
+			if(cur_th < (setup_th - hysteresis)) flag |= FLAG_BACK;
 			else flag &= ~FLAG_BACK;
 		}
 		
 		if(reverse_st)
 		{
-			if(cur_st > (setup_st + hysteresis/2)) flag |= FLAG_LEFT;
+			if(cur_st > (1500 + hysteresis/2)) flag |= FLAG_LEFT;
 			else flag &= ~FLAG_LEFT;
 			
-			if(cur_st < (setup_st - hysteresis/2)) flag |= FLAG_RIGHT;
+			if(cur_st < (1500 - hysteresis/2)) flag |= FLAG_RIGHT;
 			else flag &= ~FLAG_RIGHT;
 		}
 		else
 			{
-			if(cur_st < (setup_st - hysteresis/2)) flag |= FLAG_LEFT;
+			if(cur_st > setup_st + hysteresis) flag |= FLAG_LEFT;
 			else flag &= ~FLAG_LEFT;
 			
-			if(cur_st > (setup_st + hysteresis/2)) flag |= FLAG_RIGHT;
+			if(cur_st < setup_st - hysteresis) flag |= FLAG_RIGHT;
 			else flag &= ~FLAG_RIGHT;
 		}
 		
-
 	}
 }
