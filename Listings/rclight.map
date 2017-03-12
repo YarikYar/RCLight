@@ -9,12 +9,12 @@ Image component sizes
 
        232         22          0          0          0       1223   delay.o
        100          8          0          0          0        494   func.o
-       952        110          0         16          0     109531   main.o
+      1276        124          0         20          0     109721   main.o
         56         26        176          0       1536        632   startup_stm32f030x6.o
        116         12          0          0          0        469   system_stm32f0xx.o
 
     ----------------------------------------------------------------------
-      1456        178        208         16       1536     112349   Object Totals
+      1780        192        208         20       1536     112539   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          0          0          0          0          0          0   (incl. Padding)
 
@@ -44,8 +44,8 @@ Image component sizes
          2          0          0          0          0         68   use_no_semi.o
 
     ----------------------------------------------------------------------
-       272         16          0          0         96        548   Library Totals
-         6          0          0          0          0          0   (incl. Padding)
+       272         16          0          0        100        548   Library Totals
+         6          0          0          0          4          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -54,7 +54,7 @@ Image component sizes
        266         16          0          0         96        548   c_p.l
 
     ----------------------------------------------------------------------
-       272         16          0          0         96        548   Library Totals
+       272         16          0          0        100        548   Library Totals
 
     ----------------------------------------------------------------------
 
@@ -63,15 +63,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      1728        194        208         16       1632     112453   Grand Totals
-      1728        194        208         16       1632     112453   ELF Image Totals
-      1728        194        208         16          0          0   ROM Totals
+      2052        208        208         20       1636     112643   Grand Totals
+      2052        208        208         20       1636     112643   ELF Image Totals
+      2052        208        208         20          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 1936 (   1.89kB)
-    Total RW  Size (RW Data + ZI Data)              1648 (   1.61kB)
-    Total ROM Size (Code + RO Data + RW Data)       1952 (   1.91kB)
+    Total RO  Size (Code + RO Data)                 2260 (   2.21kB)
+    Total RW  Size (RW Data + ZI Data)              1656 (   1.62kB)
+    Total ROM Size (Code + RO Data + RW Data)       2280 (   2.23kB)
 
 ==============================================================================
 

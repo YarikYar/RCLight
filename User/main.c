@@ -23,7 +23,7 @@
 #define MODE_IDLE 0x01
 #define MODE_STROB 0x02
 
-uint8_t action, flag, mode, sysflag;
+uint8_t action, flag, mode = MODE_IDLE, sysflag, int0, int1;
 uint32_t system_tick_counter, blinker_counter, warn_counter;
 
 
@@ -45,6 +45,8 @@ void TIM17_IRQHandler(void)  // Update timer interrupt routine
 {
 	TIM17->SR = 0;
 	system_tick_counter++;
+	blinker_counter++;
+	
 	if(mode == MODE_IDLE)
 	{
 		if(flag & FLAG_STOP) TIM14->CCR1 = 47999;
@@ -53,7 +55,42 @@ void TIM17_IRQHandler(void)  // Update timer interrupt routine
 		else GPIOA->BSRR |= GPIO_BSRR_3_R;
 		
 		if((flag & FLAG_STOP) || !(flag & FLAG_LEFT) || !(flag & FLAG_RIGHT)) warn_counter++;
+		if(warn_counter > warn_time)
+		{
+			flag |= FLAG_WARN;
+			warn_counter = 0;
+		}
+    if((!(flag & FLAG_STOP)) && (flag & FLAG_WARN)) flag &= ~FLAG_WARN;
 		
+		if(blinker_counter > blinker_time)
+		{
+			blinker_counter = 0;
+			
+			if((flag & FLAG_LEFT) || (flag & FLAG_WARN))
+			{
+				if(int0) GPIOA->BSRR |= GPIO_BSRR_1_S;
+				else GPIOA->BSRR |= GPIO_BSRR_1_R;
+				int0=!int0;       
+			}
+			else
+			{
+				GPIOA->BSRR |= GPIO_BSRR_1_R;
+				int0 = 0;
+			}
+			
+			if((flag & FLAG_RIGHT) || (flag & FLAG_WARN))
+			{
+				if(int1) GPIOA->BSRR |= GPIO_BSRR_2_S;
+				else GPIOA->BSRR |= GPIO_BSRR_2_R;
+				int1=!int1;       
+			}
+			else
+			{
+				GPIOA->BSRR |= GPIO_BSRR_2_R;
+				int1 = 0;
+			}
+			
+		}	
 	}
 }
 
