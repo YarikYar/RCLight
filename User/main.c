@@ -25,7 +25,7 @@
 
 uint8_t action, flag, mode = MODE_IDLE, sysflag, int0, int1;
 uint32_t system_tick_counter, blinker_counter, warn_counter;
-uint32_t colarr[] = {0xFF,0xFFFF00,0xFF,0xFF,555,555,555,555};
+
 
 
 void EXTI0_1_IRQHandler(void) // Button interrupt routine
@@ -169,7 +169,6 @@ int __attribute__((noreturn)) main(void)
 	 setup_st = pulsein(1);
 	/* ------------------- */
 		
-   writeWS2812BA(colarr,8);
 	while(1)
 	{
 		cur_th = pulsein(0);
